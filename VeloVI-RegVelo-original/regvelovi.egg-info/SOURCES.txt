@@ -1,0 +1,15 @@
+LICENSE
+README.md
+setup.py
+regvelovi/__init__.py
+regvelovi/_constants.py
+regvelovi/_model.py
+regvelovi/_module.py
+regvelovi/_nn.py
+regvelovi/_nn2.py
+regvelovi/_regvelomixin.py
+regvelovi/_utils.py
+regvelovi.egg-info/PKG-INFO
+regvelovi.egg-info/SOURCES.txt
+regvelovi.egg-info/dependency_links.txt
+regvelovi.egg-info/top_level.txt
