@@ -718,7 +718,10 @@ class VELOVAE(BaseModuleClass):
                                           pair_indices = tf_cre_pair if tf_cre_pair is not None else None,
                                           W = skeleton, W_int = corr_m, log_h_int= log_h_int,
                                           log_h_cre_int = log_h_cre_int if log_h_cre_int is not None else None,)
-
+        #require parameter for intergral
+        self.x0 = torch.zeros(self.n_targets*2).unsqueeze(0).to(self.device)
+        self.dt0 = torch.full((self.x0.shape[0],), 1)
+        
         # saved kinetic parameter in velocity encoder module
         ## load require parameter for output velocity
         self.v_encoder.TF_func = TF_func
@@ -1145,8 +1148,8 @@ class VELOVAE(BaseModuleClass):
             t_eval = t
         
         t_eval = torch.cat((torch.tensor([0]).to(index2.device),t_eval))
-        x0 = torch.zeros(self.n_targets*2).to(self.device)
-        x0 = x0.unsqueeze(0)
+        #x0 = torch.zeros(self.n_targets*2).to(self.device)
+        #x0 = x0.unsqueeze(0)
         #options = get_step_size(, t_eval[0], t_eval[-1], len(t_eval))
         #print(t_eval)
         #pred_x = odeint(self.v_encoder, x0, t_eval, method = 'dopri5').view(-1, self.n_targets*2)
@@ -1154,9 +1157,9 @@ class VELOVAE(BaseModuleClass):
         term = to.ODETerm(self.v_encoder)
         step_method = to.Dopri5(term = term)
         step_size_controller = to.FixedStepController()
-        dt0 = torch.full((x0.shape[0],), 1)
+        #dt0 = torch.full((x0.shape[0],), 1)
         solver = to.AutoDiffAdjoint(step_method, step_size_controller)
-        sol = solver.solve(to.InitialValueProblem(y0=x0, t_eval=t_eval.repeat((1,1))), dt0=dt0)
+        sol = solver.solve(to.InitialValueProblem(y0=self.x0, t_eval=t_eval.repeat((1,1))), dt0=self.dt0)
         pred_x = sol.ys[0,:,:]
         pre_u = pred_x[1:,:self.n_targets]
         pre_s = pred_x[1:,self.n_targets:]
